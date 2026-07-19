@@ -1,0 +1,1 @@
+import { clsx,type ClassValue } from "clsx";import { twMerge } from "tailwind-merge";export function cn(...inputs:ClassValue[]){return twMerge(clsx(inputs))}export function confidence(score:number){return score>=85?"high":score>=60?"medium":"low"}
