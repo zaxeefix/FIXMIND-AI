@@ -70,9 +70,9 @@ export async function verifyRegisteredCustomer(email: string, password: string) 
   return actual.length === credential.passwordHash.length && timingSafeEqual(Buffer.from(actual), Buffer.from(credential.passwordHash));
 }
 
-export async function requireSession(role?: Session["role"] | Session["role"][]) {
+export async function requireSession(role?: Session["role"] | Session["role"][], loginPath = "/login") {
   const session = await getSession();
-  if (!session) redirect("/login");
+  if (!session) redirect(loginPath);
   const allowed = Array.isArray(role) ? role : role ? [role] : null;
   if (allowed && !allowed.includes(session.role)) redirect(roleHome(session.role));
   return session;

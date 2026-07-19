@@ -1,2 +1,5 @@
-import type {ReactNode} from "react";import {requireSession} from "@/lib/auth";
-export default async function AdminLayout({children}:{children:ReactNode}){await requireSession("admin");return children}
+import type { ReactNode } from "react";
+
+export default function AdminLayout({ children }: { children: ReactNode }) {
+  return children;
+}

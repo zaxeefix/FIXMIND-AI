@@ -4,7 +4,7 @@ export type AuthenticatedRole = Exclude<Role, "guest">;
 
 export const permissions = {
   browsePublicContent: ["guest", "customer", "technician", "admin"],
-  bookRepair: ["guest", "customer", "technician", "admin"],
+  bookRepair: ["customer"],
   runAiDiagnosis: ["customer"],
   uploadDiagnosticImages: ["customer"],
   downloadDiagnosisReport: ["customer"],
