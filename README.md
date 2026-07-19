@@ -130,8 +130,8 @@ fixmind-ai/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_GITHUB_USERNAME/fixmind-ai.git
-cd fixmind-ai
+git clone https://github.com/zaxeefix/FIXMIND-AI.git
+cd FIXMIND-AI
 ```
 
 ### 2. Install dependencies
@@ -318,8 +318,8 @@ The challenge implementation highlights:
 **Founder & CEO, ZaxeeFix Enterprise**  
 Computer Scientist · Cybersecurity Professional · AI Engineer
 
-- **GitHub:** [Add GitHub profile](https://github.com/YOUR_GITHUB_USERNAME)
-- **LinkedIn:** [Add LinkedIn profile](https://www.linkedin.com/in/YOUR_LINKEDIN_USERNAME)
+- **GitHub:** [@zaxeefix](https://github.com/zaxeefix)
+- **LinkedIn:** Profile link will be added after the official account is verified.
 - **Website:** [www.zaxeefix.com](https://www.zaxeefix.com)
 
 ## 🤝 Contributing
