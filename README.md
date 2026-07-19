@@ -29,6 +29,8 @@ A modern AI-powered device diagnosis and repair platform that helps people diagn
 - Customer registration and authentication
 - Premium AI diagnosis for registered customers
 - Role-based customer, technician, and administrator workspaces
+- Separate `/admin/login` and `/technician/login` security boundaries
+- Database-driven AI Operations Console with analytics and booking controls
 - Diagnosis and repair-history dashboard
 - Professional repair booking system
 - Technician repair progress and notes
@@ -78,7 +80,7 @@ The diagnosis result is shown before persistence completes. A temporary database
 ```text
 fixmind-ai/
 ├── app/
-│   ├── admin/                    # Administrator dashboard
+│   ├── admin/                    # AI Operations Console and separate admin login
 │   ├── api/
 │   │   ├── auth/login/           # Stable role-aware login endpoint
 │   │   ├── diagnose/             # Protected OpenAI diagnosis endpoint
@@ -90,7 +92,7 @@ fixmind-ai/
 │   ├── login/                    # Sign-in interface
 │   ├── resources/                # Free guides, tips, pricing, and samples
 │   ├── signup/                   # Customer registration
-│   ├── technician/               # Technician workspace
+│   ├── technician/               # Technician workspace and separate technician login
 │   ├── globals.css
 │   ├── layout.tsx
 │   └── page.tsx                  # Landing page
@@ -285,6 +287,9 @@ npm run check
 - Signed HTTP-only cookies protect authenticated sessions.
 - Premium AI routes and APIs require the customer role.
 - Technician and administrator workspaces enforce dedicated role checks.
+- Middleware redirects unauthenticated operational routes to role-specific login portals; server components still verify the signed role before reading protected data.
+- Customer booking is authenticated and cannot be invoked by guest, technician, or administrator roles.
+- The public navigation never exposes administrator entry points.
 - Uploaded files are validated for type, size, and count.
 - Structured AI output is validated before it reaches the UI.
 - Lightweight rate limiting helps reduce automated abuse.

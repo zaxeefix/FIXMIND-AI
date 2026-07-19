@@ -9,6 +9,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const email = String(body.email || "").trim().toLowerCase();
     const password = String(body.password || "");
+    const portal = body.portal === "admin" || body.portal === "technician" || body.portal === "customer" ? body.portal as AuthenticatedRole : null;
     if (!email || !password) return NextResponse.json({ error: "Enter your email and password." }, { status: 400 });
     if (!rateLimit(`login:${email}`, 8, 15 * 60_000).allowed) return NextResponse.json({ error: "Too many attempts. Try again in 15 minutes." }, { status: 429 });
 
@@ -19,7 +20,7 @@ export async function POST(request: NextRequest) {
     else if (email === env.DEMO_USER_EMAIL.toLowerCase() && password === env.DEMO_USER_PASSWORD) role = "customer";
     else if (await verifyRegisteredCustomer(email, password)) role = "customer";
 
-    if (!role) return NextResponse.json({ error: "Email or password is incorrect." }, { status: 401 });
+    if (!role || (portal && role !== portal)) return NextResponse.json({ error: "Email or password is incorrect for this portal." }, { status: 401 });
     await createSession(email, role);
     return NextResponse.json({ ok: true, role, home: roleHome(role) });
   } catch (error) {
