@@ -1,4 +1,27 @@
 "use server";
-import {redirect} from "next/navigation";import {bookingSchema} from "@/lib/booking";import {prisma} from "@/lib/prisma";
-export type BookingState={error:string;fields?:Record<string,string[]>};
-export async function createBooking(_:BookingState,form:FormData):Promise<BookingState>{const parsed=bookingSchema.safeParse(Object.fromEntries(form));if(!parsed.success)return{error:"Please review the booking details.",fields:parsed.error.flatten().fieldErrors};if(!process.env.DATABASE_URL)return{error:"Booking storage is not configured. Please contact support."};try{const booking=await prisma.booking.create({data:{...parsed.data,estimatedTotalCents:9900}});redirect(`/login?booking=${booking.id}`)}catch(error){console.warn("Booking failed",error instanceof Error?error.message:error);return{error:"We could not save your booking. Your details remain on this page—please try again."}}}
+
+import { redirect } from "next/navigation";
+import { bookingSchema } from "@/lib/booking";
+import { prisma } from "@/lib/prisma";
+
+export type BookingState = { error: string; fields?: Record<string, string[]> };
+
+export async function createBooking(_: BookingState, form: FormData): Promise<BookingState> {
+  const parsed = bookingSchema.safeParse(Object.fromEntries(form));
+  if (!parsed.success) {
+    return { error: "Please review the booking details.", fields: parsed.error.flatten().fieldErrors };
+  }
+  if (!process.env.DATABASE_URL) {
+    return { error: "Booking storage is not configured. Please contact support." };
+  }
+
+  let bookingId: string;
+  try {
+    const booking = await prisma.booking.create({ data: { ...parsed.data, estimatedTotalCents: 9900 } });
+    bookingId = booking.id;
+  } catch (error) {
+    console.warn("Booking failed", error instanceof Error ? error.message : error);
+    return { error: "We could not save your booking. Your details remain on this page—please try again." };
+  }
+  redirect(`/book/confirmation/${bookingId}`);
+}
