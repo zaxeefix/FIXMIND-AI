@@ -23,8 +23,8 @@ export function RoleLogin({ role, eyebrow, title, copy, icon }: { role: Authenti
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ email: form.get("email"), password: form.get("password"), portal: role }),
       });
-      const result = await response.json() as { error?: string; home?: string };
-      if (!response.ok || !result.home) {
+      const result = await response.json() as { error?: string; home?: string; role?: AuthenticatedRole };
+      if (!response.ok || result.role !== role || !result.home) {
         setError(result.error || "Sign in failed.");
         return;
       }

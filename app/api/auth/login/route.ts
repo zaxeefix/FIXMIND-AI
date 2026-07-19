@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createSession, verifyRegisteredCustomer } from "@/lib/auth";
+import { createSession, endSession, verifyRegisteredCustomer } from "@/lib/auth";
 import { getServerEnv } from "@/lib/env";
 import { rateLimit } from "@/lib/rate-limit";
-import { roleHome, type AuthenticatedRole } from "@/lib/permissions";
+import { canAccessPortal, roleHome, type AuthenticatedRole } from "@/lib/permissions";
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,6 +13,11 @@ export async function POST(request: NextRequest) {
     if (!email || !password) return NextResponse.json({ error: "Enter your email and password." }, { status: 400 });
     if (!rateLimit(`login:${email}`, 8, 15 * 60_000).allowed) return NextResponse.json({ error: "Too many attempts. Try again in 15 minutes." }, { status: 429 });
 
+    // Entering a dedicated portal is an explicit role switch. Remove any
+    // previous role session before validating so stale admin/customer cookies
+    // cannot influence the new sign-in flow.
+    if (portal) await endSession();
+
     const env = getServerEnv();
     let role: AuthenticatedRole | null = null;
     if (email === env.ADMIN_EMAIL.toLowerCase() && password === env.ADMIN_PASSWORD) role = "admin";
@@ -20,7 +25,7 @@ export async function POST(request: NextRequest) {
     else if (email === env.DEMO_USER_EMAIL.toLowerCase() && password === env.DEMO_USER_PASSWORD) role = "customer";
     else if (await verifyRegisteredCustomer(email, password)) role = "customer";
 
-    if (!role || (portal && role !== portal)) return NextResponse.json({ error: "Email or password is incorrect for this portal." }, { status: 401 });
+    if (!role || (portal && !canAccessPortal(role, portal))) return NextResponse.json({ error: "Email or password is incorrect for this portal." }, { status: 401 });
     await createSession(email, role);
     return NextResponse.json({ ok: true, role, home: roleHome(role) });
   } catch (error) {

@@ -27,3 +27,4 @@ export const permissions = {
 export type Permission = keyof typeof permissions;
 export function can(role: Role, permission: Permission) { return (permissions[permission] as readonly Role[]).includes(role); }
 export function roleHome(role: AuthenticatedRole) { return role === "admin" ? "/admin" : role === "technician" ? "/technician" : "/dashboard"; }
+export function canAccessPortal(role: AuthenticatedRole, portal: AuthenticatedRole) { return role === portal; }
