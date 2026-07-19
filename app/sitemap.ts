@@ -1,0 +1,2 @@
+import type { MetadataRoute } from "next";
+export default function sitemap():MetadataRoute.Sitemap{const now=new Date();return[{url:"https://fixmind.ai",lastModified:now,changeFrequency:"weekly",priority:1},{url:"https://fixmind.ai/resources",lastModified:now,changeFrequency:"weekly",priority:.8},{url:"https://fixmind.ai/book",lastModified:now,changeFrequency:"monthly",priority:.8},{url:"https://fixmind.ai/login",lastModified:now,changeFrequency:"yearly",priority:.3},{url:"https://fixmind.ai/signup",lastModified:now,changeFrequency:"yearly",priority:.5}]}

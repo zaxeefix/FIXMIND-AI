@@ -1,0 +1,2 @@
+import test from "node:test";import assert from "node:assert/strict";import {rateLimit} from "../lib/rate-limit.ts";
+test("rate limiter bounds a burst and resets",()=>{const key=`test-${Math.random()}`;assert.equal(rateLimit(key,2,100,0).allowed,true);assert.equal(rateLimit(key,2,100,1).allowed,true);assert.equal(rateLimit(key,2,100,2).allowed,false);assert.equal(rateLimit(key,2,100,101).allowed,true)});

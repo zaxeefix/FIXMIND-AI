@@ -1,0 +1,1 @@
+export default function Loading(){return <main className="container animate-pulse py-20" aria-label="Loading admin dashboard"><div className="h-10 w-72 rounded-xl bg-slate-200"/><div className="mt-8 grid-4">{[1,2,3,4].map(x=><div key={x} className="h-40 rounded-3xl bg-slate-100"/>)}</div><div className="mt-6 h-96 rounded-3xl bg-slate-100"/></main>}

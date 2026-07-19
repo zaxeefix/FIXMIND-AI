@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Diagnosis {
+  id              String   @id @default(cuid())
+  deviceCategory  String
+  brand           String
+  deviceModel     String
+  deviceAge       String
+  problemCategory String
+  description     String
+  result           Json
+  imageCount       Int      @default(0)
+  customerEmail    String?
+  createdAt        DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([brand, deviceModel])
+}
+
+model Booking {
+  id                  String   @id @default(cuid())
+  customerEmail       String
+  customerName        String
+  phone               String
+  deviceCategory      String
+  brand               String
+  deviceModel         String
+  service             String
+  location            String
+  appointmentAt       DateTime
+  status              String   @default("Booked")
+  estimatedTotalCents Int      @default(0)
+  notes               String?
+  assignedTechnicianEmail String?
+  technicianNotes     String?
+  repairPhotos        Json     @default("[]")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([customerEmail, createdAt])
+  @@index([status, appointmentAt])
+  @@index([assignedTechnicianEmail, status])
+}
