@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
+import { SessionTimeout } from "@/components/session-timeout";
 import { requireSession } from "@/lib/auth";
 
 export default async function BookingLayout({ children }: { children: ReactNode }) {
   await requireSession("customer");
-  return children;
+  return <><SessionTimeout role="customer" />{children}</>;
 }

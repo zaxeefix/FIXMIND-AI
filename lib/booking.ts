@@ -8,9 +8,11 @@ export const bookingSchema = z.object({
   brand: z.string().trim().min(2).max(40),
   deviceModel: z.string().trim().min(2).max(80),
   service: z.string().trim().min(2).max(100),
+  fulfillmentMethod: z.enum(["Walk-in", "Pickup"]),
   location: z.string().trim().min(2).max(120),
+  address: z.string().trim().max(200).optional(),
   appointmentAt: z.coerce.date().refine((date) => date.getTime() > Date.now(), "Choose a future appointment."),
   notes: z.string().trim().max(1000).optional(),
-});
+}).superRefine((value, context) => { if (value.fulfillmentMethod === "Pickup" && (!value.address || value.address.length < 5)) context.addIssue({ code: "custom", path: ["address"], message: "Enter a pickup address." }); });
 
 export type BookingInput = z.infer<typeof bookingSchema>;

@@ -6,11 +6,12 @@ import { getServerEnv } from "@/lib/env";
 import { roleHome, type AuthenticatedRole } from "@/lib/permissions";
 
 export type Session = { email: string; role: AuthenticatedRole; expiresAt: number };
-type CustomerCredential = { email: string; salt: string; passwordHash: string };
+type CustomerCredential = { email: string; name?: string; salt: string; passwordHash: string };
 
 const COOKIE = "fixmind_session";
 const ACCOUNT_COOKIE = "fixmind_customer";
 const DEVELOPMENT_SECRET = "fixmind-local-development-secret-change-before-production";
+export const SESSION_IDLE_SECONDS = 180;
 
 function authSecret() {
   const configured = getServerEnv().AUTH_SECRET;
@@ -47,16 +48,25 @@ export async function getSession(): Promise<Session | null> {
 export async function createSession(email: string, role: Session["role"]) {
   const secret = authSecret();
   if (!secret) throw new Error("Authentication is unavailable. Configure AUTH_SECRET and restart the server.");
-  const value = signedPayload({ email, role, expiresAt: Date.now() + 604_800_000 }, secret);
-  (await cookies()).set(COOKIE, value, { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: 604_800 });
+  const value = signedPayload({ email, role, expiresAt: Date.now() + SESSION_IDLE_SECONDS * 1000 }, secret);
+  (await cookies()).set(COOKIE, value, { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: SESSION_IDLE_SECONDS });
 }
 
-export async function registerCustomerAccount(email: string, password: string) {
+export async function registerCustomerAccount(email: string, password: string, name?: string) {
   const secret = authSecret();
   if (!secret) throw new Error("Authentication is unavailable. Configure AUTH_SECRET and restart the server.");
   const salt = randomBytes(16).toString("hex");
-  const credential: CustomerCredential = { email, salt, passwordHash: scryptSync(password, salt, 32).toString("base64url") };
+  const credential: CustomerCredential = { email, name, salt, passwordHash: scryptSync(password, salt, 32).toString("base64url") };
   (await cookies()).set(ACCOUNT_COOKIE, signedPayload(credential, secret), { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: 2_592_000 });
+}
+
+export async function getRegisteredCustomerProfile(email: string) {
+  const secret = authSecret();
+  if (!secret) return null;
+  const token = (await cookies()).get(ACCOUNT_COOKIE)?.value;
+  if (!token) return null;
+  const credential = verifyPayload<CustomerCredential>(token, secret);
+  return credential?.email === email ? { email: credential.email, name: credential.name || "" } : null;
 }
 
 export async function verifyRegisteredCustomer(email: string, password: string) {

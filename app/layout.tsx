@@ -67,8 +67,9 @@ const structuredData = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className="antialiased">
+        <script dangerouslySetInnerHTML={{ __html: `try{const saved=localStorage.getItem('fixmind-theme');const dark=saved?saved==='dark':matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.classList.toggle('dark',dark)}catch{}` }} />
         <a className="skip-link" href="#main-content">Skip to main content</a>
         <script
           type="application/ld+json"
